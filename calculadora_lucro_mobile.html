@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Lucro - Carros</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 15px;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      margin: 6px 0 12px 0;
+      padding: 10px;
+      font-size: 1em;
+      text-align: right;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    label {
+      font-weight: bold;
+      font-size: 0.95em;
+      display: block;
+      margin-top: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 20px;
+    }
+    .resultado {
+      margin-top: 20px;
+      padding: 12px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    .resultado p {
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calculadora de Lucro / 粗利益計算機</h2>
+
+    <label>1. Valor da compra do carro (sem imposto) / 車両本体価格（税抜）</label>
+    <input type="text" id="carro" oninput="formatInput(this); calcular()">
+
+    <label>2. Recycle (sem imposto) / リサイクル料金（非課税）</label>
+    <input type="text" id="recycle" oninput="formatInput(this); calcular()">
+
+    <label>3. Frete (sem imposto) / 陸送費（税抜）</label>
+    <input type="text" id="frete" oninput="formatInput(this); calcular()">
+
+    <label>4. Taxa de leilão (sem imposto) / 落札料（税抜）</label>
+    <input type="text" id="leilao" oninput="formatInput(this); calcular()">
+
+    <label>5. Outros gastos 1 / その他費用1（税抜）</label>
+    <input type="text" id="gasto1" oninput="formatInput(this); calcular()">
+
+    <label>6. Outros gastos 2 / その他費用2（税抜）</label>
+    <input type="text" id="gasto2" oninput="formatInput(this); calcular()">
+
+    <label>7. Outros gastos 3 / その他費用3（税抜）</label>
+    <input type="text" id="gasto3" oninput="formatInput(this); calcular()">
+
+    <label>8. Valor de venda (com imposto) / 販売価格（税込）</label>
+    <input type="text" id="venda" oninput="formatInput(this); calcular()">
+
+    <label>9. Shouhizei pago na compra / 仕入時の消費税</label>
+    <input type="text" id="shouhizei" oninput="formatInput(this); calcular()">
+
+    <div class="resultado">
+      <p><strong>✅ Receita sem imposto / 売上（税抜）:</strong> <span id="receita">-</span> 円</p>
+      <p><strong>✅ Custo total sem imposto / 総仕入原価（税抜）:</strong> <span id="custo">-</span> 円</p>
+      <p><strong>✅ Lucro bruto / 粗利益（税引前）:</strong> <span id="lucroBruto">-</span> 円</p>
+      <p><strong>✅ Imposto de consumo a pagar / 支払うべき消費税:</strong> <span id="imposto">-</span> 円</p>
+      <p><strong>✅ Lucro líquido final / 最終利益（純利益）:</strong> <span id="liquido">-</span> 円</p>
+    </div>
+  </div>
+
+  <script>
+    function parseNumber(str) {
+      return parseFloat(str.replace(/\./g, '').replace(/,/g, '')) || 0;
+    }
+
+    function formatWithDots(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function formatInput(el) {
+      const raw = el.value.replace(/\./g, '').replace(/,/g, '');
+      if (!isNaN(raw) && raw !== "") {
+        el.value = formatWithDots(parseInt(raw));
+      }
+    }
+
+    function calcular() {
+      const carro = parseNumber(document.getElementById('carro').value);
+      const recycle = parseNumber(document.getElementById('recycle').value);
+      const frete = parseNumber(document.getElementById('frete').value);
+      const leilao = parseNumber(document.getElementById('leilao').value);
+      const gasto1 = parseNumber(document.getElementById('gasto1').value);
+      const gasto2 = parseNumber(document.getElementById('gasto2').value);
+      const gasto3 = parseNumber(document.getElementById('gasto3').value);
+      const venda = parseNumber(document.getElementById('venda').value);
+      const shouhizei = parseNumber(document.getElementById('shouhizei').value);
+
+      const custoTotal = carro + recycle + frete + leilao + gasto1 + gasto2 + gasto3;
+      const receitaSemImposto = venda / 1.1;
+      const lucroBruto = receitaSemImposto - custoTotal;
+      const impostoAPagar = receitaSemImposto * 0.1 - shouhizei;
+      const lucroLiquido = lucroBruto - impostoAPagar;
+
+      document.getElementById('receita').textContent = formatWithDots(Math.round(receitaSemImposto));
+      document.getElementById('custo').textContent = formatWithDots(Math.round(custoTotal));
+      document.getElementById('lucroBruto').textContent = formatWithDots(Math.round(lucroBruto));
+      document.getElementById('imposto').textContent = formatWithDots(Math.round(impostoAPagar));
+      document.getElementById('liquido').textContent = formatWithDots(Math.round(lucroLiquido));
+    }
+  </script>
+</body>
+</html>
